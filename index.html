@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Ramos Zamora Michael Deivys · Portafolio Base de Datos II</title>
+<meta content="Portafolio académico de Ramos Zamora Michael Deivys — Base de Datos II, UPLA, 2026-II." name="description"/>
+<meta content="#03040d" name="theme-color"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&amp;family=JetBrains+Mono:wght@500;600;700&amp;family=Montserrat:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style id="public-access-v1">
+/* ===== PORTAFOLIO PÚBLICO / ROLES / CURSOR ===== */
+body{cursor:default}
+a,button,summary,select,input,textarea{cursor:pointer}
+.access-bar{
+  position:fixed;top:16px;right:20px;z-index:9500;display:flex;align-items:center;gap:8px;
+  padding:8px;border:1px solid rgba(69,207,255,.20);border-radius:14px;
+  background:rgba(2,9,18,.78);backdrop-filter:blur(16px);box-shadow:0 12px 35px rgba(0,0,0,.32);
+}
+.access-status{display:flex;align-items:center;gap:7px;padding:0 8px;color:#a9c0cf;font:600 11px Cormorant Garamond;letter-spacing:.04em}
+.status-dot{width:7px;height:7px;border-radius:50%;background:#58d9ff;box-shadow:0 0 12px #58d9ff;animation:statusPulse 2s infinite}
+.access-btn{
+  border:1px solid rgba(216,168,59,.38);border-radius:9px;padding:9px 12px;
+  background:rgba(216,168,59,.07);color:#ffe18a;font:600 11px Cormorant Garamond;transition:.22s;
+}
+.access-btn:hover:not(:disabled){transform:translateY(-2px);border-color:#ffe18a;box-shadow:0 8px 24px rgba(216,168,59,.15)}
+.edit-btn{border-color:rgba(69,207,255,.32);color:#9be8ff;background:rgba(69,207,255,.06)}
+.access-btn:disabled{opacity:.42;cursor:not-allowed}
+.logout-btn{color:#ffcfaa;border-color:rgba(255,145,100,.28)}
+
+.auth-modal{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;padding:20px}
+.auth-modal.open{display:flex}
+.auth-backdrop{position:absolute;inset:0;background:rgba(0,3,8,.78);backdrop-filter:blur(7px)}
+.auth-card{
+  position:relative;z-index:1;width:min(430px,94vw);padding:32px;border-radius:20px;
+  border:1px solid rgba(216,168,59,.55);background:linear-gradient(145deg,rgba(7,20,34,.98),rgba(2,8,17,.99));
+  box-shadow:0 30px 100px rgba(0,0,0,.7),0 0 45px rgba(69,207,255,.10);animation:authIn .3s ease both
+}
+.auth-close{position:absolute;right:14px;top:10px;border:0;background:none;color:#9db0bd;font-size:28px}
+.auth-orb{width:58px;height:58px;display:grid;place-items:center;margin:0 auto 12px;border:1px solid #ffe18a;border-radius:50%;color:#ffe18a;box-shadow:0 0 30px rgba(216,168,59,.18)}
+.auth-kicker{color:#45cfff;font:700 10px Cormorant Garamond;letter-spacing:.18em;text-align:center}
+.auth-card h2{margin:7px 0;color:#ffe18a;font:700 25px Cormorant Garamond;text-align:center}
+.auth-card p{color:#9fb2c0;text-align:center;line-height:1.5;font-size:13px}
+.auth-label{display:block;margin:13px 0 6px;color:#a9c8d8;font:600 11px Cormorant Garamond}
+.auth-input{width:100%;box-sizing:border-box;padding:12px 13px;border:1px solid rgba(69,207,255,.24);border-radius:10px;background:#06111c;color:#edf7ff;outline:none}
+.auth-input:focus{border-color:#ffe18a;box-shadow:0 0 18px rgba(216,168,59,.10)}
+.auth-submit{width:100%;margin-top:17px;padding:12px;border:1px solid #d8a83b;border-radius:10px;background:linear-gradient(135deg,#d8a83b,#8e620d);color:#130e05;font-weight:800}
+.auth-hint{margin-top:10px;color:#7fa8ba;font-size:11px;text-align:center}
+.auth-error{min-height:18px;margin-top:6px;color:#ff9e8d;text-align:center;font-size:12px}
+.auth-note{margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);color:#718896;font-size:10px;line-height:1.5;text-align:center}
+
+.edit-panel{
+  position:fixed;right:20px;top:78px;z-index:9400;width:min(390px,calc(100vw - 40px));display:none;
+  padding:18px;border:1px solid rgba(69,207,255,.28);border-radius:16px;background:rgba(3,12,22,.96);
+  box-shadow:0 20px 70px rgba(0,0,0,.6);backdrop-filter:blur(16px)
+}
+.edit-panel.open{display:block;animation:authIn .25s ease both}
+.edit-panel-head{display:flex;justify-content:space-between;align-items:start;gap:12px}
+.edit-panel-head span{display:block;color:#45cfff;font:700 10px Cormorant Garamond;letter-spacing:.12em}
+.edit-panel-head strong{display:block;margin-top:4px;color:#ffe18a;font:700 18px Cormorant Garamond}
+.edit-panel-head button{border:0;background:none;color:#a9bdc8;font-size:22px}
+.edit-panel p,.edit-panel small{color:#849aa8;font-size:11px;line-height:1.5}
+.edit-panel label{display:block;margin:10px 0;color:#a9c8d8;font:600 10px Cormorant Garamond}
+.edit-panel input,.edit-panel textarea{width:100%;box-sizing:border-box;margin-top:5px;padding:9px;border:1px solid rgba(69,207,255,.2);border-radius:8px;background:#06111c;color:#edf7ff;resize:vertical}
+.edit-actions{display:flex;gap:8px;margin-top:14px}
+.edit-actions button{flex:1;padding:10px;border-radius:8px;border:1px solid rgba(216,168,59,.35);background:rgba(216,168,59,.08);color:#ffe18a}
+.edit-actions .save-edit{background:linear-gradient(135deg,#d8a83b,#8e620d);color:#160f04;font-weight:800}
+
+.cursor-glow{position:fixed;z-index:99999;pointer-events:none;width:180px;height:180px;border-radius:50%;transform:translate(-50%,-50%);
+ background:radial-gradient(circle,rgba(69,207,255,.13) 0,rgba(69,207,255,.05) 25%,transparent 68%);mix-blend-mode:screen}
+.cursor-ring{position:fixed;z-index:99998;pointer-events:none;width:22px;height:22px;border:1px solid rgba(255,225,138,.65);border-radius:50%;transform:translate(-50%,-50%);transition:width .15s,height .15s,border-color .15s}
+.cursor-ring.hover{width:38px;height:38px;border-color:#45cfff;box-shadow:0 0 20px rgba(69,207,255,.25)}
+.cursor-spark{position:fixed;z-index:99997;pointer-events:none;width:4px;height:4px;border-radius:50%;background:#ffe18a;box-shadow:0 0 12px #45cfff;animation:sparkFade .65s ease-out forwards}
+@keyframes statusPulse{50%{opacity:.45;transform:scale(.7)}}
+@keyframes authIn{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes sparkFade{from{opacity:.9;transform:scale(1)}to{opacity:0;transform:translateY(-15px) scale(.2)}}
+@media(max-width:700px){
+ .access-bar{top:10px;right:10px;left:10px;justify-content:flex-end}.access-status{margin-right:auto}
+ .access-btn{padding:8px 9px;font-size:10px}.cursor-glow,.cursor-ring,.cursor-spark{display:none}
+}
+</style>
+<style id="admin-media-actions-css">
+.admin-media-actions{display:flex;justify-content:center;align-items:center;gap:8px;margin:10px auto 0;flex-wrap:wrap;position:relative;z-index:5}.admin-media-actions .admin-media-control{position:static!important;display:inline-flex!important;align-items:center;justify-content:center;padding:8px 12px;border-radius:8px;border:1px solid rgba(69,207,255,.3);background:rgba(5,18,30,.92);color:#bceeff;font:700 11px Cormorant Garamond;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25)}.admin-media-actions .admin-delete-control{border-color:rgba(255,100,100,.35);color:#ffb1b1;background:rgba(70,12,18,.9)}.admin-file-actions{margin:8px 0 0}.admin-file-actions .admin-media-control{position:static!important}
+</style>
+<link href="assets/galactic-enhancements.css" rel="stylesheet"/>
+<link href="assets/content-editor.css" rel="stylesheet"/>
+<link href="assets/efectos.css" rel="stylesheet"/>
+<link href="assets/cosmos.css" rel="stylesheet"/>
+</head>
+<body class="cosmos home">
+<div aria-hidden="true" class="auth-modal" id="authModal">
+<div class="auth-backdrop" data-close-auth=""></div>
+<div aria-labelledby="authTitle" aria-modal="true" class="auth-card" role="dialog">
+<button aria-label="Cerrar" class="auth-close" data-close-auth="" type="button">×</button>
+<div class="auth-orb">✦</div>
+<div class="auth-kicker">PORTAL DE ACCESO</div>
+<h2 id="authTitle">Iniciar sesión</h2>
+<p>El portafolio es público. Solo existe un rol con permisos de edición: <b>Administrador</b>.</p>
+<form id="authForm">
+<label class="auth-label" for="authUser">Usuario administrador</label>
+<input autocomplete="username" class="auth-input" id="authUser" placeholder="Usuario" required=""/>
+<label class="auth-label" for="authPass">Contraseña</label>
+<input autocomplete="current-password" class="auth-input" id="authPass" placeholder="Contraseña" required="" type="password"/>
+<button class="auth-submit" type="submit">Entrar como administrador ✦</button>
+<div class="auth-hint" id="authHint">Administrador: admin / admin123</div>
+<div class="auth-error" id="authError" role="alert"></div>
+</form>
+<div class="auth-note">El visitante puede visualizar el portafolio, pero no puede editar, eliminar ni añadir contenido.</div>
+</div>
+</div>
+<div aria-hidden="true" class="edit-panel" id="editPanel">
+<div class="edit-panel-head">
+<div><span>✦ MODO ADMINISTRADOR</span><strong>Editor rápido</strong></div>
+<button aria-label="Cerrar editor" id="closeEdit" type="button">×</button>
+</div>
+<p>Modifica estos campos y guarda los cambios en este navegador.</p>
+<label>Nombre visible<input id="editName" type="text"/></label>
+<label>Descripción<input id="editIntro" type="text"/></label>
+<label>Biografía<textarea id="editBio" rows="4"></textarea></label>
+<div class="media-admin-box"><strong>🖼️ Imágenes y archivos</strong><p>En modo administrador, pulsa <b>“✎ Cambiar imagen”</b> sobre una imagen o <b>“✎ Reemplazar archivo”</b> junto a un PDF/Word para sustituirlo. El visitante solo puede visualizar.</p></div>
+<div class="edit-actions"><button class="save-edit" id="saveEdit" type="button">Guardar cambios</button><button id="resetEdit" type="button">Restaurar</button></div>
+<small>Los cambios de texto y medios se guardan localmente en este navegador.</small>
+</div>
+
+<div class="app-screen" id="app-screen">
+<header class="topnav" id="topnav">
+<a class="nav-brand" href="#inicio" aria-label="Ir al inicio"><img alt="Logo UPLA" src="assets/upla-logo.png"/><span class="nav-brand-text"><b>Mi Portafolio</b><small>Michael Ramos · UPLA</small></span></a>
+<nav class="nav" aria-label="Navegación principal">
+<a href="#inicio">Inicio</a><a href="#perfil">Sobre mí</a><a href="#habilidades">Habilidades</a><a href="#proyectos">Unidades</a><a href="#cv">Mi CV</a><a href="documentos/index.html">Documentos</a><a href="#contacto">Contacto</a>
+</nav>
+<div class="nav-actions">
+<div class="access-bar" id="accessBar" title="Solo el administrador puede editar imágenes, archivos y contenido.">
+<span class="access-status"><span class="status-dot"></span><span id="accessStatus">Visitante público</span></span><span class="visitor-lock-note" id="visitorLockNote">Solo el administrador puede editar imágenes, archivos y contenido.</span>
+<button class="access-btn" id="loginBtn" type="button">⌘ Iniciar sesión</button>
+<button aria-label="Editar solo disponible para administrador" class="access-btn edit-btn admin-only" disabled="" id="editBtn" type="button">✎ Editar</button>
+<button class="access-btn logout-btn" hidden="" id="logoutBtn" type="button">↪ Salir</button>
+</div>
+</div>
+<button class="nav-toggle" type="button" aria-label="Abrir menú" aria-expanded="false"><span></span></button>
+</header>
+<main>
+<section class="hero" id="inicio">
+<div class="hero-content">
+<div class="hero-brand"><img alt="Logo UPLA" src="assets/upla-logo.png"/><span>Universidad Peruana Los Andes</span></div>
+<div class="eyebrow">✦ Portafolio académico · Base de Datos II</div>
+<h2>Ramos Zamora<br/>Michael Deivys</h2>
+<div class="role">Estudiante · Facultad de Ingeniería de Sistemas y Computación</div>
+<p class="intro">Un espacio digital para presentar mi aprendizaje, proyectos, evidencias y evolución profesional en el mundo de las bases de datos y la ingeniería de sistemas.</p>
+<div class="actions"><a class="btn primary" href="#proyectos">Ver unidades →</a><a class="btn" href="#perfil">Conóceme</a></div>
+</div>
+<a class="hero-scroll" href="#perfil" aria-label="Desplazarse hacia abajo"><span>Explorar</span><i></i></a>
+</section>
+
+<section class="stats-band" id="resumen" aria-label="Resumen del ciclo">
+<div class="container">
+<div class="stats-head">Mi portafolio académico · estadísticas del ciclo</div>
+<div class="stats-grid">
+<div class="stat-tile"><div class="stat-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H19v14H5.5A1.5 1.5 0 0 0 4 19.5z"/><path d="M4 19.5A1.5 1.5 0 0 0 5.5 21H19v-3"/><path d="M9 8h6"/></svg></div><div><strong data-count="4">0</strong><span class="lbl">Unidades</span></div></div>
+<div class="stat-tile"><div class="stat-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg></div><div><strong data-count="16">0</strong><span class="lbl">Semanas</span></div></div>
+<div class="stat-tile"><div class="stat-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg></div><div><strong data-count="26">0</strong><span class="lbl">Documentos</span></div></div>
+<div class="stat-tile"><div class="stat-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="2.6"/><ellipse cx="12" cy="12" rx="10" ry="4.6" transform="rotate(-28 12 12)"/></svg></div><div><strong data-count="2026">0</strong><span class="lbl">Año · Semestre II</span></div></div>
+</div>
+</div>
+</section>
+
+<section id="perfil"><div class="container">
+<div class="section-head"><span class="mark">◈</span><h2>Sobre mí</h2><p>Mi ficha académica</p></div>
+<div class="about-grid">
+<article class="card profile about-main">
+<div class="profile-photo orbit-photo"><span class="moon"></span><img alt="Fotografía de perfil de Michael Ramos Zamora" src="assets/evidencias/perfil.jpg"/></div>
+<div class="about-text">
+<div class="sheet-name"><h1>Ramos Zamora Michael Deivys</h1><p class="title">Estudiante · Facultad de Ingeniería de Sistemas y Computación</p></div>
+<div class="profile-bio">
+<strong>Ingeniero de Sistemas en formación.</strong>
+Me interesa el desarrollo de soluciones tecnológicas, la gestión de bases de datos y la construcción de sistemas útiles, seguros y eficientes. Este portafolio reúne mi aprendizaje y evolución profesional.
+<div class="skills-row"><span class="skill-pill">Bases de datos</span><span class="skill-pill">Desarrollo de software</span><span class="skill-pill">Análisis de sistemas</span><span class="skill-pill">Tecnología</span></div>
+</div>
+</div>
+</article>
+<aside class="card course-card">
+<h3>Datos del curso</h3>
+<div class="sheet-grid">
+<div class="stat"><div class="k">Universidad</div><div class="v">Universidad Peruana Los Andes</div></div>
+<div class="stat"><div class="k">Curso</div><div class="v">Base de Datos II (332151)</div></div>
+<div class="stat"><div class="k">Semestre</div><div class="v">2026-II</div></div>
+<div class="stat"><div class="k">Docente</div><div class="v">Mg. Raúl Enrique Fernández Bejarano</div></div>
+<div class="stat"><div class="k">Rol en el portafolio</div><div class="v">Administrador</div></div>
+<div class="stat"><div class="k">Sede</div><div class="v">Huancayo, Perú</div></div>
+</div>
+</aside>
+</div>
+</div></section>
+
+<section id="habilidades"><div class="container">
+<div class="section-head"><span class="mark">⚙</span><h2>Habilidades</h2><p>Tecnologías y competencias</p></div>
+<div class="card"><div class="skills">
+
+<div class="skill"><span>Base de datos</span><b>90%</b><div class="bar"><i style="width:90%"></i></div></div><div class="skill"><span>Desarrollo de software</span><b>82%</b><div class="bar"><i style="width:82%"></i></div></div><div class="skill"><span>Análisis de sistemas</span><b>80%</b><div class="bar"><i style="width:80%"></i></div></div><div class="skill"><span>SQL</span><b>78%</b><div class="bar"><i style="width:78%"></i></div></div><div class="skill"><span>Arquitectura de BD</span><b>76%</b><div class="bar"><i style="width:76%"></i></div></div><div class="skill"><span>Tecnología</span><b>85%</b><div class="bar"><i style="width:85%"></i></div></div>
+</div></div>
+</div></section>
+
+<section id="cv"><div class="container">
+<div class="section-head"><span class="mark">▤</span><h2>Mi Currículum Vitae</h2><p>Perfil académico y profesional</p></div>
+<div class="cv-grid">
+<article class="card cv-who">
+<div class="profile-photo orbit-photo"><span class="moon"></span><img alt="Foto de perfil de Michael Ramos Zamora" src="assets/evidencias/perfil.jpg"/></div>
+<h3>Michael Ramos Zamora</h3>
+<p>Estudiante · Ingeniería de Sistemas y Computación</p>
+<p>Presento mi CV dentro del portafolio para complementar mi perfil académico, experiencia, competencias y proyectos.</p>
+<a class="btn primary" href="assets/cv/michael-ramos-cv.jpg" rel="noopener" target="_blank">Ver CV completo ↗</a>
+</article>
+<article class="card cv-preview">
+<div class="cv-preview-head"><div><span class="eyebrow">Currículum Vitae</span><h3>Perfil profesional</h3></div><span class="skill-pill">CV</span></div>
+<a class="cv-img" href="assets/cv/michael-ramos-cv.jpg" rel="noopener" target="_blank"><img alt="Currículum Vitae de Michael Ramos Zamora" src="assets/cv/michael-ramos-cv.jpg"/></a>
+<p class="hint">Haz clic sobre el CV para verlo en tamaño completo.</p>
+</article>
+</div>
+</div></section>
+
+<section id="proyectos"><div class="container">
+<div class="section-head"><span class="mark">▣</span><h2>Unidades del curso</h2><p>Explora el contenido de cada unidad: cuatro semanas con sus evidencias, documentos y scripts.</p></div>
+<div class="project-intro"><div><span class="arcane-label">✦ Ruta académica</span><h3>Unidades → Semanas → Evidencias</h3><p>Entra a cada unidad para consultar sus cuatro semanas. Las infografías de la <strong>Semana 02 de la Unidad I</strong> permanecen dentro de esa semana, y las <strong>Preguntas del Grimorio</strong> permanecen dentro de la <strong>Semana 01</strong>.</p></div><div class="project-rune">✧</div></div>
+<div aria-label="Unidades de aprendizaje" class="unit-card-grid">
+<a class="unit-card" data-unit="1" href="unidades/unidad-1/index.html">
+<span class="unit-planet" aria-hidden="true"></span>
+<span class="unit-card-number">UNIDAD 1</span><strong>Arquitecturas de BD</strong>
+<span class="unit-card-desc">Introducción a los Sistemas Informáticos</span><span class="unit-card-arrow">›</span>
+</a>
+<a class="unit-card" data-unit="2" href="unidades/unidad-2/index.html">
+<span class="unit-planet" aria-hidden="true"></span>
+<span class="unit-card-number">UNIDAD 2</span><strong>Instancias y Almacenamiento</strong>
+<span class="unit-card-desc">Gestión de motores y almacenamiento de datos</span><span class="unit-card-arrow">›</span>
+</a>
+<a class="unit-card" data-unit="3" href="unidades/unidad-3/index.html">
+<span class="unit-planet" aria-hidden="true"></span>
+<span class="unit-card-number">UNIDAD 3</span><strong>Seguridad y Backups</strong>
+<span class="unit-card-desc">Seguridad, roles, privilegios y recuperación</span><span class="unit-card-arrow">›</span>
+</a>
+<a class="unit-card" data-unit="4" href="unidades/unidad-4/index.html">
+<span class="unit-planet" aria-hidden="true"></span>
+<span class="unit-card-number">UNIDAD 4</span><strong>Monitoreo y Flashback</strong>
+<span class="unit-card-desc">Auditoría, consultas y recuperación temporal</span><span class="unit-card-arrow">›</span>
+</a>
+</div>
+</div></section>
+
+<section id="contacto"><div class="container">
+<div class="section-head"><span class="mark">✉</span><h2>Contacto</h2><p>Conecta conmigo</p></div>
+<div class="contact-wrap">
+<article class="card contact-lead">
+<h3>Disponible para seguir aprendiendo y creando</h3>
+<p>Este portafolio presenta mi formación en Ingeniería de Sistemas y el trabajo desarrollado para Base de Datos II.</p>
+<div class="chips"><span class="chip">UPLA</span><span class="chip">Base de Datos II</span><span class="chip">Ingeniería de Sistemas</span><span class="chip">2026-II</span><span class="chip">Huancayo · Perú</span></div>
+</article>
+<div class="card"><div class="contact-inline">
+<a class="social-link" href="https://wa.me/51932736930" rel="noopener noreferrer" target="_blank">
+<span aria-hidden="true" class="social-icon brand-whatsapp"><svg role="img" viewbox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.7 14.9L2 22l5.3-1.3A10 10 0 1 0 12 2zm0 2a8 8 0 0 1 6.9 12l-.3.5.3 2.1-2.1-.5-.5.3A8 8 0 1 1 12 4zm-3 3.2c-.2 0-.5.1-.7.3-.4.4-1 1-1 2.2 0 1.3 1 2.6 1.1 2.8.1.2 2 3.2 5 4.4 2.5 1 3 .8 3.5.7.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.1-1.4-.1-.1-.3-.2-.7-.4l-1.8-.9c-.3-.1-.5-.1-.7.2l-.7.9c-.2.2-.4.3-.7.1-.4-.2-1.5-.6-2.3-1.5-.6-.7-1-1.5-1.1-1.7-.1-.3 0-.4.2-.6l.5-.6c.2-.2.2-.4.1-.7l-.7-1.7c-.2-.5-.4-.7-.7-.7z"></path></svg></span><span>WhatsApp<small>+51 932 736 930</small></span>
+</a>
+<a class="social-link" href="https://www.facebook.com/share/1FHPtd9LFZ/" rel="noopener noreferrer" target="_blank">
+<span aria-hidden="true" class="social-icon brand-facebook"><svg role="img" viewbox="0 0 24 24"><path d="M13.5 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.6 1.7-1.6h1.8V3.8c-.3 0-1.3-.1-2.4-.1-2.4 0-4.1 1.5-4.1 4.2V10H8v3h2.5v8h3z"></path></svg></span><span>Facebook<small>Red social</small></span>
+</a>
+<a class="social-link" href="https://www.instagram.com/michael.zamora_?stkn=MWJpY3JqazVjYzB5bw==&amp;utm_source=ig_contact_invite" rel="noopener noreferrer" target="_blank">
+<span aria-hidden="true" class="social-icon brand-instagram"><svg role="img" viewbox="0 0 24 24"><path d="M7.2 2h9.6A5.2 5.2 0 0 1 22 7.2v9.6a5.2 5.2 0 0 1-5.2 5.2H7.2A5.2 5.2 0 0 1 2 16.8V7.2A5.2 5.2 0 0 1 7.2 2zm0 2A3.2 3.2 0 0 0 4 7.2v9.6A3.2 3.2 0 0 0 7.2 20h9.6a3.2 3.2 0 0 0 3.2-3.2V7.2A3.2 3.2 0 0 0 16.8 4H7.2zm9.9 1.5a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"></path></svg></span><span>Instagram<small>@michael.zamora_</small></span>
+</a>
+<a class="social-link" href="https://www.tiktok.com/@m..ramos.zamora?_r=1&amp;_t=ZS-99kAOuRb0y5" rel="noopener noreferrer" target="_blank">
+<span aria-hidden="true" class="social-icon brand-tiktok"><svg role="img" viewbox="0 0 24 24"><path d="M16.6 3c.4 2.1 1.6 3.5 3.4 4v3.1a8.5 8.5 0 0 1-3.4-1V15a6 6 0 1 1-6-6c.4 0 .8 0 1.2.1v3.2a3 3 0 1 0 1.8 2.7V3h3z"></path></svg></span><span>TikTok<small>@m..ramos.zamora</small></span>
+</a>
+</div>
+</div></div>
+</div>
+</div></section>
+</main>
+<footer>
+<img class="foot-logo" alt="Logo UPLA" src="assets/upla-logo.png"/>
+<strong>MI PORTAFOLIO DIGITAL · MICHAEL RAMOS ZAMORA</strong>
+<div class="foot-links"><a href="#inicio">Inicio</a><a href="#perfil">Sobre mí</a><a href="#proyectos">Unidades</a><a href="documentos/index.html">Documentos</a><a href="#contacto">Contacto</a></div>
+Ingeniería de Sistemas · Universidad Peruana Los Andes (UPLA) · 2026-II<br/>© 2026 · Base de Datos II
+</footer>
+</div>
+<script>
+/* Portafolio público: no requiere inicio de sesión. */
+document.querySelectorAll('.nav a').forEach(a=>{
+  a.addEventListener('click',()=>{
+    const href=a.getAttribute('href');
+    if(href && href.startsWith('#')){
+      setTimeout(()=>document.querySelector(href)?.scrollIntoView({behavior:'smooth',block:'start'}),20);
+    }
+  });
+});
+</script><script>
+(function(){
+ const root=document.getElementById('proyectos'); if(!root) return;
+ const tabs=[...root.querySelectorAll('.project-unit-tabs .unit-tab')];
+ const panels=[...root.querySelectorAll('.project-units > .unit-panel')];
+ function activate(n){tabs.forEach(t=>t.classList.toggle('is-active',t.dataset.unit===String(n)));panels.forEach(p=>p.classList.toggle('is-active',p.id===`unit-${n}`));}
+ tabs.forEach(t=>t.addEventListener('click',()=>activate(t.dataset.unit)));
+ activate(1);
+ // Lightbox for academic evidence images.
+ root.querySelectorAll('.quest-media img,.reg-card-media img,.sgbd-card-media img').forEach(img=>img.addEventListener('click',()=>{
+   const overlay=document.createElement('div'); overlay.className='evidence-lightbox'; overlay.innerHTML='<div class="lightbox-close">×</div><img alt="" src="'+img.src+'">'; document.body.appendChild(overlay); requestAnimationFrame(()=>overlay.classList.add('show')); overlay.addEventListener('click',e=>{if(e.target===overlay||e.target.classList.contains('lightbox-close')) overlay.remove()});
+ }));
+})();
+</script>
+
+<div class="cosmic-bot" id="cosmicBot">
+<button aria-label="Abrir asistente Xal'tor inspirado en Sagittarius A*" class="bot-toggle" id="botToggle">✦</button>
+<div aria-label="Asistente Xal'tor" class="bot-panel" id="botPanel" role="dialog">
+<div class="bot-head"><div class="bot-avatar">✦</div><div><b>Xal'tor</b><small>Sagittarius A* · Núcleo IA</small></div><button aria-label="Cerrar" class="bot-close" id="botClose">×</button></div>
+<div class="bot-messages" id="botMessages"><div class="bot-msg">Saludos, explorador. Soy <strong>Xal'tor</strong>, núcleo IA inspirado en <strong>Sagittarius A*</strong>. Conozco el contenido de tus <strong>unidades y semanas</strong> y puedo responder preguntas de <strong>bases de datos</strong> (SQL, índices, seguridad, backups, Azure…).</div></div>
+<div class="bot-quick"><button data-q="¿Qué contiene la Unidad I?">Unidad I</button><button data-q="¿Dónde están las preguntas del Grimorio?">Grimorio</button><button data-q="¿Qué contiene la Semana 02?">Semana 02</button><button data-q="¿Quién soy?">Sobre mí</button><button data-q="¿Qué es un índice clustered?">Índices</button><button data-q="Diferencia entre INNER JOIN y LEFT JOIN">JOIN</button><button data-q="¿Qué contiene la Unidad 2 Semana 4?">U2 · S4</button></div>
+<form class="bot-form" id="botForm"><input autocomplete="off" id="botInput" placeholder="Pregunta al núcleo Sagittarius A*…"><button>Enviar</button></input></form>
+</div>
+</div>
+<script src="assets/xaltor-data.js"></script><script src="assets/xaltor.js"></script><script id="portfolio-editable-config">
+/*
+============================================================
+ ZONA EDITABLE — IMÁGENES DE LAS UNIDADES
+============================================================
+ Para cambiar o agregar una imagen de portada, coloca el archivo
+ dentro de /assets/imagenes/ y escribe aquí su ruta.
+ Ejemplo: image: "assets/imagenes/unidad-1.jpg"
+ Déjalo vacío ("") si no quieres imagen.
+ Las evidencias de cada semana están dentro de su carpeta.
+============================================================
+*/
+window.PORTAFOLIO_UNIDADES = {
+  unidad1: { image: "" },
+  unidad2: { image: "" },
+  unidad3: { image: "" },
+  unidad4: { image: "" }
+};
+document.querySelectorAll('.unit-card[data-unit]').forEach(card => {
+  const item = window.PORTAFOLIO_UNIDADES['unidad' + card.dataset.unit];
+  if (item && item.image) {
+    card.style.setProperty('--unit-image', `url("${item.image}")`);
+    card.classList.add('has-image');
+  }
+});
+</script>
+<script id="public-access-js">
+(function(){
+  const modal=document.getElementById('authModal');
+  const loginBtn=document.getElementById('loginBtn');
+  const editBtn=document.getElementById('editBtn');
+  const logoutBtn=document.getElementById('logoutBtn');
+  const status=document.getElementById('accessStatus');
+  const form=document.getElementById('authForm');
+  const error=document.getElementById('authError');
+  const hint=document.getElementById('authHint');
+  const editPanel=document.getElementById('editPanel');
+  const app=document.getElementById('app-screen');
+  const DEFAULTS={
+    name:'Ramos Zamora Michael Deivys',
+    intro:'Un espacio digital para presentar mi aprendizaje, proyectos, evidencias y evolución profesional en el mundo de las bases de datos y la ingeniería de sistemas.',
+    bio:'Ingeniero de Sistemas en formación. Me interesa el desarrollo de soluciones tecnológicas, la gestión de bases de datos y la construcción de sistemas útiles, seguros y eficientes. Este portafolio reúne mi aprendizaje y evolución profesional.'
+  };
+  const $=id=>document.getElementById(id);
+  function openAuth(){ modal.classList.add('open');modal.setAttribute('aria-hidden','false');$('authUser').focus(); }
+  function closeAuth(){ modal.classList.remove('open');modal.setAttribute('aria-hidden','true');error.textContent=''; }
+  function applyRole(role){
+    const admin=role==='admin';
+    status.textContent=admin?'Administrador':'Visitante público';
+    editBtn.disabled=!admin;
+    editBtn.setAttribute('aria-hidden', admin ? 'false' : 'true');
+    editBtn.title = admin ? 'Abrir editor de administrador' : 'Solo disponible para el administrador';
+    logoutBtn.hidden=false;
+    loginBtn.textContent='✓ Sesión activa';
+    loginBtn.disabled=true;
+    if(admin) editBtn.title='Abrir editor de administrador';
+    localStorage.setItem('portfolioRole',role);
+    localStorage.setItem('portfolioEditMode', role==='admin' ? 'true' : 'false');
+    document.dispatchEvent(new Event('portfolio-edit-mode'));
+  }
+  function logout(){
+    localStorage.removeItem('portfolioRole');
+    status.textContent='Visitante público';editBtn.disabled=true;logoutBtn.hidden=true;localStorage.setItem('portfolioEditMode','false');document.dispatchEvent(new Event('portfolio-edit-mode'));
+    loginBtn.disabled=false;loginBtn.textContent='⌘ Iniciar sesión';editPanel.classList.remove('open');
+  }
+  loginBtn.addEventListener('click',openAuth);
+  document.querySelectorAll('[data-close-auth]').forEach(x=>x.addEventListener('click',closeAuth));
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAuth()});
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    const u=$('authUser').value.trim(),p=$('authPass').value;
+    const ok=(u==='admin'&&p==='admin123');
+    if(!ok){error.textContent='Credenciales de administrador incorrectas.';return}
+    applyRole('admin');closeAuth();
+    editPanel.classList.add('open');
+  });
+  logoutBtn.addEventListener('click',logout);
+  editBtn.addEventListener('click',()=>{
+    if(editBtn.disabled)return;
+    const saved=JSON.parse(localStorage.getItem('portfolioEdits')||'{}');
+    $('editName').value=saved.name||DEFAULTS.name;
+    $('editIntro').value=saved.intro||DEFAULTS.intro;
+    $('editBio').value=saved.bio||DEFAULTS.bio;
+    const opening=!editPanel.classList.contains('open');
+    editPanel.classList.toggle('open');
+    localStorage.setItem('portfolioEditMode', opening ? 'true' : 'false');
+    document.dispatchEvent(new Event('portfolio-edit-mode'));
+  });
+  $('closeEdit').addEventListener('click',()=>editPanel.classList.remove('open'));
+  function setText(selector,value){const el=document.querySelector(selector);if(el)el.textContent=value;}
+  function loadEdits(){
+    const saved=JSON.parse(localStorage.getItem('portfolioEdits')||'{}');
+    if(saved.name){setText('.sheet-name h1',saved.name);const hero=document.querySelector('.hero h2');if(hero)hero.innerHTML=saved.name.replace(/\s+/, '<br/>');}
+    if(saved.intro)setText('.hero .intro',saved.intro);
+    if(saved.bio){
+      const b=document.querySelector('.profile-bio');
+      if(b){const strong=b.querySelector('strong');b.innerHTML='';const s=document.createElement('strong');s.textContent='Ingeniero de Sistemas en formación.';b.appendChild(s);b.append(' '+saved.bio.replace(/^Ingeniero de Sistemas en formación\.\s*/i,''));const chips=document.createElement('div');chips.className='skills-row';chips.innerHTML='<span class="skill-pill">Bases de datos</span><span class="skill-pill">Desarrollo de software</span><span class="skill-pill">Análisis de sistemas</span><span class="skill-pill">Tecnología</span>';b.appendChild(chips);}
+    }
+  }
+  $('saveEdit').addEventListener('click',()=>{
+    const saved={name:$('editName').value.trim()||DEFAULTS.name,intro:$('editIntro').value.trim()||DEFAULTS.intro,bio:$('editBio').value.trim()||DEFAULTS.bio};
+    localStorage.setItem('portfolioEdits',JSON.stringify(saved));loadEdits();editPanel.classList.remove('open');
+  });
+  $('resetEdit').addEventListener('click',()=>{localStorage.removeItem('portfolioEdits');location.reload()});
+  loadEdits();
+  const role=localStorage.getItem('portfolioRole'); if(role==='admin')applyRole('admin'); else logout();
+
+  // Cursor mágico: halo + anillo + pequeñas chispas.
+  if(matchMedia('(pointer:fine)').matches){
+    const glow=document.createElement('div');glow.className='cursor-glow';
+    const ring=document.createElement('div');ring.className='cursor-ring';
+    document.body.append(glow,ring);
+    let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my,lastSpark=0;
+    addEventListener('mousemove',e=>{
+      mx=e.clientX;my=e.clientY;glow.style.left=mx+'px';glow.style.top=my+'px';
+      rx+=(mx-rx)*.22;ry+=(my-ry)*.22;ring.style.left=rx+'px';ring.style.top=ry+'px';
+      if(performance.now()-lastSpark>70){lastSpark=performance.now();const sp=document.createElement('i');sp.className='cursor-spark';sp.style.left=mx+'px';sp.style.top=my+'px';document.body.appendChild(sp);setTimeout(()=>sp.remove(),700);}
+    });
+    document.querySelectorAll('a,button,input,textarea,select,summary').forEach(el=>{
+      el.addEventListener('mouseenter',()=>ring.classList.add('hover'));
+      el.addEventListener('mouseleave',()=>ring.classList.remove('hover'));
+    });
+  }
+})();
+</script>
+<script src="assets/media-editor.js"></script>
+<script src="assets/galactic-enhancements.js"></script>
+<script src="assets/content-editor.js"></script><script src="assets/admin-publish.js"></script><script src="assets/efectos.js"></script><script src="assets/portada.js"></script><script src="assets/cosmos.js"></script></body></html>
